@@ -4,6 +4,7 @@ int N;
 int A, B;           // open 상태인 문 번호 
 int num;            // 사용할 벽장 수
 int order[20];
+int visit[20];
 int min;
 
 void input()
@@ -19,9 +20,10 @@ void input()
     return;
 }
 
-void dfs()
+void dfs(int start)
 {
     // 벽장 순서대로 돌면서 해결
+    visited[start] = 1;
     for ( int i = 1 ; i <= num ; i++ ){
         if ( ( order[i] == A || order[i] == B )) continue;   // 이미 문 열려있는 경우
 
@@ -42,17 +44,16 @@ void dfs()
         }else{
             // A를 움직이는 경우
             // B를 움직이는 경우
-            if ( order[i]-A < B-order[i]){
-                while( A != order[i]){
-                    A++;
-                    min++;
-                }
-            }else{
-                while( B != order[i]){
-                    B--;
-                    min++;
-                }
+            while( A != order[i]){
+                A++;
+                min++;
             }
+            if( dfs(i) != 1 ) return 1;
+            while( B != order[i]){
+                B--;
+                min++;
+            }
+            
         }
     }
     return;
@@ -61,7 +62,7 @@ void dfs()
 int main()
 {
     input();
-    dfs();
+    dfs(1);
     printf("%d", min);
     return 0;
 }
