@@ -4,6 +4,8 @@ int map[50][50];
 int cx = -1;
 int cy = 0;
 int flag = 0;
+int sflag = 0;
+int second = 0;
 int cnt, scnt;
 int endx, endy;
 int sx, sy, dx, dy;
@@ -17,6 +19,7 @@ void output();
 void roof(Dir in);
 void sroof(Dir in);
 Dir solv(Dir in);
+Dir ssolv(Dir in);
 
 
 int main() {
@@ -96,61 +99,141 @@ Dir solv(Dir in) {
 		cnt++;
 		return out;
 	}
-	else {
-		// in이 같은 방향이어야 함.즉 4방위 중 하나이므로 in 방향당 3가지 케이스가 나옴
-		// 그런데 그중에 하나는 실패했으므로 나머지 2개를 테스트 해봐야함
-		// 2개중에 더 빠른놈이 답임.
-		// 아니네 하나밖에 나올 수가 없음.
-		if (k == 0) {
-			flag = 1;
-			printf("-1");
-			return out;
-		}
-		cx = cx - in.x;
-		cy = cy - in.y;
-		cnt--;
+	else if ( k == 0 ){
+		flag = 1;
+		printf("-1");
+		return out;
+	}else{
+		second = 1;
 		k--;
-		// save point map[sx][sy] 에서 dx, dy 방향
-		sx = cx;
-		sy = cy;
-		dx = in.x;
-		dy = in.y;
-
-		for (int i = 0; i < 6; i++) {
-			// save point로.. 
-			cx = sx;
-			cy = sy;
-			in.x = dx;
-			in.y = dy;
-			// 문제의 그 지점 회복됨.
-			// 여기서 타일을 바꾸고 out지점도 타일에 따라 바뀌어야됨.
-			map[sx][sy] = i;
-			
-			roof(in);
-		}
 		return out;
 	}
-
 	return out;
 }
 
 void roof(Dir in) {
+
+	Dir out;
 	while (1) {
-		in = solv(in);
+		out = solv(in);
 		if (flag == 1) break;
+		if (second == 1 && k==0 ) {
+			sroof(in);
+			break;
+		}
 		if ((cx + in.x == endx) && (cy + in.y == endy)) {	// 도착
 			printf("%d", cnt);
 			break;
 		};
+		in = out;
 	}
 	return;
 }
 
 void sroof(Dir in) {
+	//save point
+	sx = cx;
+	sy = cy;
+	int temp;
+
+// 무슨 타일로 바꿨는지는 중요하지 않음. 3방향이란게 중요
+	//방향 유지
 	while(1) {
-		in = solv(in);
+		in = ssolv(in);
+		if (sflag == 1) break;
+		if ((cx + in.x == endx) && (cy + in.y == endy)) {	// 도착
+			printf("%d", cnt + scnt);
+			return;
+		}
 	}
+
+	cx = sx;
+	cy = sy;
+	sflag = 0;
+	scnt =0 ;
+	temp = in.x;
+	in.x = in.y;
+	in.y = temp;
+
+	while(1) {
+		in = ssolv(in);
+		if (sflag == 1) break;
+		if ((cx + in.x == endx) && (cy + in.y == endy)) {	// 도착
+			printf("%d", cnt + scnt);
+			return;
+		}
+	}
+
+	cx = sx;
+	cy = sy;
+	sflag = 0;
+	scnt = 0;
+	in.x = -in.x;
+	in.y = -in.y;
+	while(1) {
+		in = ssolv(in);
+		if (sflag == 1) break;
+		if ((cx + in.x == endx) && (cy + in.y == endy)) {	// 도착
+			printf("%d", cnt + scnt);
+			return;
+		}
+	}
+	printf("-1");
 	return;
+}
+
+Dir ssolv(Dir in){
+	cx = cx + in.x;
+	cy = cy + in.y;
+	int tile = map[cx][cy];
+	Dir out;
+
+	if (((cx < N) || (cy < N)) && (tile == 0) && (((in.x == 0) && (in.y == -1)) || ((in.x == -1) && (in.y == 0)))) {
+		out.x = -in.y;
+		out.y = -in.x;
+		scnt++;
+		return out;
+	}
+	else if (((cx < N) || (cy < N)) && (tile == 1) && (((in.x == 1) && (in.y == 0)) || ((in.x == 0) && (in.y == -1)))) {
+		out.x = in.y;
+		out.y = in.x;
+		scnt++;
+		return out;
+	}
+	else if (((cx < N) || (cy < N)) && (tile == 2) && (((in.x == -1) && (in.y == 0)) || ((in.x == 0) && (in.y == 1)))) {
+		out.x = in.y;
+		out.y = in.x;
+		scnt++;
+		return out;
+	}
+	else if (((cx < N) || (cy < N)) && (tile == 3) && (((in.x == 1) && (in.y == 0)) || ((in.x == 0) && (in.y == 1)))) {
+		out.x = -in.y;
+		out.y = -in.x;
+		scnt++;
+		return out;
+	}
+	else if (((cx < N) || (cy < N)) && (tile == 4) && (((in.x == 0) && (in.y == -1)) || ((in.x == 0) && (in.y == 1)))) {
+		out.x = in.x;
+		out.y = in.y;
+		scnt++;
+		return out;
+	}
+	else if (((cx < N) || (cy < N)) && (tile == 5) && (((in.x == 1) && (in.y == 0)) || ((in.x == -1) && (in.y == 0)))) {
+		out.x = in.x;
+		out.y = in.y;
+		scnt++;
+		return out;
+	}
+	else if ( k == 0 ){
+		// 얘는 하면 안됨. 3번 반복할 놈이라.
+		sflag = 1;
+		return out;
+	}else{
+		second = 1;
+		k--;
+		return out;
+	}
+	return out;
 }
 
 
