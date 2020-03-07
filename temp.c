@@ -5,10 +5,10 @@ int cx = -1;
 int cy = 0;
 int flag = 0;
 int sflag = 0;
-int second = 0;
 int cnt, scnt;
 int endx, endy;
-int sx, sy, dx, dy;
+int sx = -2 , sy=-2;
+int t;
 
 typedef struct _point {
 	int x;
@@ -17,9 +17,7 @@ typedef struct _point {
 void input();
 void output();
 void roof(Dir in);
-void sroof(Dir in);
 Dir solv(Dir in);
-Dir ssolv(Dir in);
 
 
 int main() {
@@ -60,53 +58,67 @@ void output() {
 Dir solv(Dir in) {
 	cx = cx + in.x;
 	cy = cy + in.y;
-	int tile = map[cx][cy];
+`	int tile = map[cx][cy];
 	Dir out;
 
-	if (((cx < N) || (cy < N)) && (tile == 0) && (((in.x == 0) && (in.y == -1)) || ((in.x == -1) && (in.y == 0)))) {
+	if (((cx < N) && (cx >= 0) && (cy >= 0) && (cy < N)) && (tile == 0) && (((in.x == 0) && (in.y == -1)) || ((in.x == -1) && (in.y == 0)))) {
 		out.x = -in.y;
 		out.y = -in.x;
 		cnt++;
 		return out;
 	}
-	else if (((cx < N) || (cy < N)) && (tile == 1) && (((in.x == 1) && (in.y == 0)) || ((in.x == 0) && (in.y == -1)))) {
+	else if (((cx < N) && (cx >= 0) && (cy >= 0) && (cy < N)) && (tile == 1) && (((in.x == 1) && (in.y == 0)) || ((in.x == 0) && (in.y == -1)))) {
 		out.x = in.y;
 		out.y = in.x;
 		cnt++;
 		return out;
 	}
-	else if (((cx < N) || (cy < N)) && (tile == 2) && (((in.x == -1) && (in.y == 0)) || ((in.x == 0) && (in.y == 1)))) {
+	else if (((cx < N) && (cx >= 0) && (cy >= 0) && (cy < N)) && (tile == 2) && (((in.x == -1) && (in.y == 0)) || ((in.x == 0) && (in.y == 1)))) {
 		out.x = in.y;
 		out.y = in.x;
 		cnt++;
 		return out;
 	}
-	else if (((cx < N) || (cy < N)) && (tile == 3) && (((in.x == 1) && (in.y == 0)) || ((in.x == 0) && (in.y == 1)))) {
+	else if (((cx < N) && (cx >= 0) && (cy >= 0) && (cy < N)) && (tile == 3) && (((in.x == 1) && (in.y == 0)) || ((in.x == 0) && (in.y == 1)))) {
 		out.x = -in.y;
 		out.y = -in.x;
 		cnt++;
 		return out;
 	}
-	else if (((cx < N) || (cy < N)) && (tile == 4) && (((in.x == 0) && (in.y == -1)) || ((in.x == 0) && (in.y == 1)))) {
+	else if (((cx < N) && (cx >= 0) && (cy >= 0) && (cy < N)) && (tile == 4) && (((in.x == 0) && (in.y == -1)) || ((in.x == 0) && (in.y == 1)))) {
 		out.x = in.x;
 		out.y = in.y;
 		cnt++;
 		return out;
 	}
-	else if (((cx < N) || (cy < N)) && (tile == 5) && (((in.x == 1) && (in.y == 0)) || ((in.x == -1) && (in.y == 0)))) {
+	else if (((cx < N) && (cx >= 0) && (cy >= 0) && (cy < N)) && (tile == 5) && (((in.x == 1) && (in.y == 0)) || ((in.x == -1) && (in.y == 0)))) {
 		out.x = in.x;
 		out.y = in.y;
 		cnt++;
 		return out;
 	}
-	else if ( k == 0 ){
+	else if (k <= 0 && cx!= sx && cy!=sy ) {
 		flag = 1;
 		printf("-1");
-		return out;
-	}else{
-		second = 1;
-		k--;
-		return out;
+		return in;
+	}
+	else {
+		if (sx != (cx - in.x) || sy != (cy - in.y)) k--;
+		cx = cx - in.x;
+		cy = cy - in.y;
+		sx = cx;
+		sy = cy;
+		map[cx][cy] = t;
+        // 안된다
+        // 아무거나 넣으면 안됨. 입구가 맞는 놈으로 넣어야됨.. ㅅㅂ
+        // in.x가 아니라 그 전의 방향을 기억하고 있어야함.. 후
+		t++;
+		cx = -1;
+		cy = 0;
+		cnt = 0;
+		in.x = 1;
+		in.y = 0;
+		return in;
 	}
 	return out;
 }
@@ -117,10 +129,6 @@ void roof(Dir in) {
 	while (1) {
 		out = solv(in);
 		if (flag == 1) break;
-		if (second == 1 && k==0 ) {
-			sroof(in);
-			break;
-		}
 		if ((cx + in.x == endx) && (cy + in.y == endy)) {	// 도착
 			printf("%d", cnt);
 			break;
@@ -130,111 +138,6 @@ void roof(Dir in) {
 	return;
 }
 
-void sroof(Dir in) {
-	//save point
-	sx = cx;
-	sy = cy;
-	int temp;
-
-// 무슨 타일로 바꿨는지는 중요하지 않음. 3방향이란게 중요
-	//방향 유지
-	while(1) {
-		in = ssolv(in);
-		if (sflag == 1) break;
-		if ((cx + in.x == endx) && (cy + in.y == endy)) {	// 도착
-			printf("%d", cnt + scnt);
-			return;
-		}
-	}
-
-	cx = sx;
-	cy = sy;
-	sflag = 0;
-	scnt =0 ;
-	temp = in.x;
-	in.x = in.y;
-	in.y = temp;
-
-	while(1) {
-		in = ssolv(in);
-		if (sflag == 1) break;
-		if ((cx + in.x == endx) && (cy + in.y == endy)) {	// 도착
-			printf("%d", cnt + scnt);
-			return;
-		}
-	}
-
-	cx = sx;
-	cy = sy;
-	sflag = 0;
-	scnt = 0;
-	in.x = -in.x;
-	in.y = -in.y;
-	while(1) {
-		in = ssolv(in);
-		if (sflag == 1) break;
-		if ((cx + in.x == endx) && (cy + in.y == endy)) {	// 도착
-			printf("%d", cnt + scnt);
-			return;
-		}
-	}
-	printf("-1");
-	return;
-}
-
-Dir ssolv(Dir in){
-	cx = cx + in.x;
-	cy = cy + in.y;
-	int tile = map[cx][cy];
-	Dir out;
-
-	if (((cx < N) || (cy < N)) && (tile == 0) && (((in.x == 0) && (in.y == -1)) || ((in.x == -1) && (in.y == 0)))) {
-		out.x = -in.y;
-		out.y = -in.x;
-		scnt++;
-		return out;
-	}
-	else if (((cx < N) || (cy < N)) && (tile == 1) && (((in.x == 1) && (in.y == 0)) || ((in.x == 0) && (in.y == -1)))) {
-		out.x = in.y;
-		out.y = in.x;
-		scnt++;
-		return out;
-	}
-	else if (((cx < N) || (cy < N)) && (tile == 2) && (((in.x == -1) && (in.y == 0)) || ((in.x == 0) && (in.y == 1)))) {
-		out.x = in.y;
-		out.y = in.x;
-		scnt++;
-		return out;
-	}
-	else if (((cx < N) || (cy < N)) && (tile == 3) && (((in.x == 1) && (in.y == 0)) || ((in.x == 0) && (in.y == 1)))) {
-		out.x = -in.y;
-		out.y = -in.x;
-		scnt++;
-		return out;
-	}
-	else if (((cx < N) || (cy < N)) && (tile == 4) && (((in.x == 0) && (in.y == -1)) || ((in.x == 0) && (in.y == 1)))) {
-		out.x = in.x;
-		out.y = in.y;
-		scnt++;
-		return out;
-	}
-	else if (((cx < N) || (cy < N)) && (tile == 5) && (((in.x == 1) && (in.y == 0)) || ((in.x == -1) && (in.y == 0)))) {
-		out.x = in.x;
-		out.y = in.y;
-		scnt++;
-		return out;
-	}
-	else if ( k == 0 ){
-		// 얘는 하면 안됨. 3번 반복할 놈이라.
-		sflag = 1;
-		return out;
-	}else{
-		second = 1;
-		k--;
-		return out;
-	}
-	return out;
-}
 
 
 /*
