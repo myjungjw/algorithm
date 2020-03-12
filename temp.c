@@ -4,6 +4,7 @@ int N, k;
 int map[50][50][2];
 int endx, endy;
 int maxcnt;
+int kt;
 
 typedef struct _node {
 	int inx;
@@ -14,7 +15,7 @@ typedef struct _node {
 
 void input();
 void output();
-int dfs(Node current, int cnt);
+int dfs(Node current, int cnt, int kt);
 int NBlocked(Node current);
 int CBlocked(Node current, int tile);
 Node CalcOut(Node current);
@@ -30,7 +31,7 @@ int main() {
 	current.inx = 1;
 	current.iny = 0;
 
-	if (dfs(current, cnt) != 0) maxcnt = -1;
+	if (dfs(current, cnt, k) != 0) maxcnt = -1;
 	output();
 	return 0;
 }
@@ -57,7 +58,7 @@ void output() {
 	}
 }
 
-int dfs(Node current, int cnt) {
+int dfs(Node current, int cnt, int kt) {
 	cnt++;
 	Node next;
 	next = CalcOut(current);
@@ -70,15 +71,15 @@ int dfs(Node current, int cnt) {
 	// 1.막히면
 	if (NBlocked(next) == -1 || CBlocked(current, map[current.x][current.y][0]) == -1) {
 		if (map[current.x][current.y][1] != 0) return -1;
-		if (k == 0) return -1;
-		k--;
+		if (kt == 0) return -1;
+		kt--;
 		for (int tile = 0; tile < 6; tile++) {
 			if (CBlocked(current, tile) == -1) continue;
 
 			map[current.x][current.y][0] = tile;
 			map[current.x][current.y][1] = tile+1;
 
-			if (dfs(current, cnt - 1) == 0) {
+			if (dfs(current, cnt - 1, kt) == 0) {
 				return 0;
 			}
 			else {
@@ -87,12 +88,23 @@ int dfs(Node current, int cnt) {
 		}
 	}else {  // 2. 안막히면
 		map[current.x][current.y][1] = 1; // visited
-		if (dfs(next, cnt) == 0) return 0;
+		if (dfs(next, cnt, kt) == 0) return 0;
 	}
-	
+	if (kt == 0) return -1;
 	// 이전거로 돌아가서 타일 바꾸기!!
-	k++;
+	for (int tile = 0; tile < 6; tile++) {
+		if (CBlocked(current, tile) == -1) continue;
 
+		map[current.x][current.y][0] = tile;
+		map[current.x][current.y][1] = tile + 1;
+
+		if (dfs(current, cnt - 1, kt) == 0) {
+			return 0;
+		}
+		else {
+			continue;
+		}
+	}
 }
 
 
