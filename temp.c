@@ -85,12 +85,13 @@ int dfs(Node current, int cnt) {
 				continue;
 			}
 		}
-	
 	}else {  // 2. 안막히면
 		map[current.x][current.y][1] = 1; // visited
 		if (dfs(next, cnt) == 0) return 0;
 	}
-	// tile 3개 다 테스트 해야 하는데
+	
+	// 이전거로 돌아가서 타일 바꾸기!!
+	k++;
 
 }
 
