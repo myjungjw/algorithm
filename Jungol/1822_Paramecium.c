@@ -9,7 +9,6 @@ int sum(int s, int e){
 }
 
 int main() {
-	freopen("in.txt", "r", stdin);
 	scanf("%d %d %d %d", &a, &b, &d, &N);
 	bug[0] = 1;
 	for (int i = 1; i <= N; i++) {
