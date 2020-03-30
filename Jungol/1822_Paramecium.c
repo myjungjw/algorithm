@@ -1,23 +1,36 @@
 #include <stdio.h>
-int a, b, d, N;
-int head, tail;
-char bug[1000001];
+int a, b, d, N, temp;
+int bug[10001];
+int birth() {
+	int sum=0;
+	for (int i = (a-1); i < (b-1); i++) {
+		sum += bug[i];
+	}
+	return sum%1000;
+}
+
+int result() {
+	int sum=0;
+	for (int i = 0; i < d; i++) {
+		sum += bug[i];
+	}
+	return sum%1000;
+}
 int main() {
-  int h, t;
-	freopen("in.txt", "r", stdin);
 	scanf("%d %d %d %d", &a, &b, &d, &N);
 	for (int i = 0; i <= N; i++) {
-		h = head;
-		t = tail;
-		for (int k = h; k <= t; k++) {
-			if (bug[k] >= d) head = (head + 1) % 1000;
-			if (bug[k] >= a && bug[k] < b) tail = (tail + 1) % 1000;
+		if (i == 0) {	
+			bug[0] = 1;
+			continue;
 		}
-		for (int j = head; j <= tail; j++) bug[j]++;
+		else {
+			temp = birth();
+			for (int j = (d - 1) ; j > 0 ; j--) {
+				bug[j] = bug[j - 1];
+			}
+			bug[0] = temp;
+		}
 	}
-	int result;
-	if (tail >= head) result = tail - head + 1;
-	else result = tail - head + 1001;
-	printf("%d", result);
+	printf("%d", result());
 	return 0;
 }
