@@ -1,0 +1,19 @@
+#include <stdio.h>
+int N;
+int h[80001];
+int cnt, i, j;
+int main() {
+	freopen("in.txt", "r", stdin);
+	scanf("%d", &N);
+	for (i = 0; i < N; i++) {
+		scanf("%d", &h[i]);
+	}
+	for (i = 0; i < N ; i++) {
+		for (j = i+1; j < N; j++) {
+			if (h[i] > h[j]) cnt++;
+			else break;
+		}
+	}
+	printf("%d", cnt);
+	return 0;
+}
