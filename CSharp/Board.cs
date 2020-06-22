@@ -6,15 +6,6 @@ using System.Text;
 
 namespace Algorithm
 {
-    public enum TileType
-    {
-        Empty,
-        Wall,
-        Player,
-        Dest
-    }
-    
-
     class Board
     {
         public TileType[,] Tile { get; private set; }
@@ -24,6 +15,14 @@ namespace Algorithm
         public int DestX { get ; private set; }
 
         Player _player;
+
+        public enum TileType
+        {
+            Empty,
+            Wall,
+            Player,
+            Dest
+        }
 
         public void Initialize(int size, Player player)
         {
@@ -108,21 +107,20 @@ namespace Algorithm
                 int count = 1;
                 for (int x = 0; x < Size; x++)
                 {
-
                     if (x % 2 == 0 || y % 2 == 0) continue;
 
                     if (x == Size - 2 && y == Size - 2) continue;
                     if (y == Size - 2)
                     {
-                        if (rand.Next(0, 2) == 0)
-                            continue;
+                        //if (rand.Next(0, 2) == 0)
+                        //    continue;
                         Tile[y, x + 1] = TileType.Empty;
                         continue;
                     }
                     if (x == Size - 2)
                     {
-                        if (rand.Next(0, 2) == 0)
-                            continue;
+                        //if (rand.Next(0, 2) == 0)
+                        //    continue;
                         Tile[y + 1, x] = TileType.Empty;
                         continue;
                     }
